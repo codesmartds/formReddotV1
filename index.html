@@ -106,43 +106,79 @@
       padding:0;
       position:relative;
       overflow:hidden;
-      min-height:520px;
+    }
+
+    /* Contenedor principal del hero en desktop.
+       Dentro viven únicamente dos columnas: banner y formulario. */
+    .hero-shell{
+      width:100%;
+      max-width:1600px;
+      margin:0 auto;
     }
 
     .hero-grid{
       display:grid;
-      grid-template-columns:1fr 420px;
+      grid-template-columns:minmax(0,1fr) 420px;
       gap:0;
       min-height:520px;
+      align-items:stretch;
     }
 
     /* ── Lado izquierdo: imagen + copy superpuesto ── */
     .hero-left{
       position:relative;
       overflow:hidden;
+      background:var(--red-d);
+      isolation:isolate;
     }
-    /* Imagen de fondo del hero (lifestyle persona con celular) */
+
+    /*
+      Capa de relleno:
+      ocupa todo el alto del hero con la misma imagen en modo cover.
+      Solo se ve en los espacios que deja la imagen principal en contain.
+    */
+    .hero-left::before{
+      content:'';
+      position:absolute;
+      inset:-18px;
+      z-index:0;
+      background:
+        linear-gradient(rgba(176,26,32,.28),rgba(176,26,32,.28)),
+        url('https://www.claro.cr/portal/cr/recursos_contenido/1762814035068-POSTPAGO_1540x360.jpg')
+        center center / cover no-repeat;
+      filter:blur(10px) brightness(.7);
+      transform:scale(1.04);
+      pointer-events:none;
+    }
+
+    /*
+      Imagen principal:
+      contain garantiza que el banner completo, incluido el contenido 5G
+      del lado derecho, permanezca visible sin recortes.
+    */
     .hero-img{
       position:absolute;
       inset:0;
+      z-index:1;
       width:100%;
       height:100%;
-      object-fit:cover;
-      object-position:center top;
-      /* overlay rojo para mantener legibilidad */
-      filter:brightness(.72);
+      object-fit:contain;
+      object-position:center center;
+      filter:brightness(.78);
     }
+
     /* Gradiente sobre la imagen para que el texto sea legible */
     .hero-left::after{
       content:'';
       position:absolute;
       inset:0;
-      background:linear-gradient(to right, rgba(176,26,32,.55) 0%, rgba(176,26,32,.1) 100%);
+      z-index:2;
+      background:linear-gradient(to right, rgba(176,26,32,.62) 0%, rgba(176,26,32,.18) 62%, rgba(176,26,32,.04) 100%);
       pointer-events:none;
     }
     .hero-copy{
       position:relative;
-      z-index:2;
+      z-index:3;
       padding:52px 44px 52px 44px;
       color:var(--white);
       display:flex;
@@ -532,6 +568,7 @@
     }
 
     @media(max-width:720px){
+      .hero-shell{max-width:none}
       .hero-grid{grid-template-columns:1fr;min-height:auto}
       /* Banner primero (order:0 = posición natural) */
       .hero-left{
@@ -615,6 +652,7 @@
             formulario der siempre visible
 ════════════════════════════════ -->
 <section class="hero" aria-labelledby="hero-h1">
+  <div class="hero-shell">
   <div class="hero-grid">
 
     <!-- Izquierda: imagen de fondo + copy -->
@@ -731,6 +769,7 @@
     </div><!-- /hero-right -->
 
   </div><!-- /hero-grid -->
+  </div><!-- /hero-shell -->
 </section>
 
 <!-- ════════════════════════════════
