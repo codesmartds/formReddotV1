@@ -1,0 +1,14 @@
+{
+  "name": "form-share-claro-railway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing estática de planes móviles Claro preparada para Railway",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=20 <23"
+  }
+}
