@@ -3,9 +3,17 @@
 <head>
   <!--
     CLARO COSTA RICA · PLANES POSTPAGO MÓVILES
-    Versión:   moviles-version-03
+    Versión:   moviles-version-03-wa
     Categoría: Móviles (exclusivo)
-    Concepto:  Formulario siempre visible · Imágenes · Texto mínimo · Directo a la compra
+    Concepto:  WhatsApp como canal principal · Formulario secundario · CTA verde en toda la página
+    Cambios vs v03 original:
+      - Hero derecho: WhatsApp como CTA primario, formulario como opción secundaria colapsable
+      - Tarjetas: botón "¡Lo quiero!" abre WhatsApp con plan pre-escrito
+      - Flotante WA: más grande, etiqueta siempre visible
+      - Sticky bar: WhatsApp como botón principal (invierte jerarquía original)
+      - CTA strip final: WhatsApp como botón destacado (primario)
+      - Modal: botón WhatsApp prominente antes del formulario
+      - Header: botón WhatsApp compacto
   -->
 
   <!-- GTM -->
@@ -55,6 +63,11 @@
       --g400:      #9ca3af;
       --g600:      #4b5563;
       --g900:      #111827;
+      /* WhatsApp palette */
+      --wa:        #25d366;
+      --wa-d:      #1aaa50;
+      --wa-dd:     #128c3e;
+      --wa-bg:     #e8f9ef;
       --font:      'Inter', system-ui, sans-serif;
       --rsm:       8px;
       --rmd:       14px;
@@ -77,7 +90,6 @@
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
     .container{width:100%;max-width:1140px;margin:0 auto;padding:0 20px}
 
-    /* ─── HEADER ─── */
     .hd{
       background:var(--red);
       padding:12px 0;
@@ -95,6 +107,17 @@
       letter-spacing:.05em;text-transform:uppercase;
       padding:5px 12px;border-radius:var(--rpill);
     }
+    /* Botón WhatsApp en header */
+    .hd-wa{
+      display:inline-flex;align-items:center;gap:6px;
+      background:var(--wa);color:var(--white);
+      font-size:.75rem;font-weight:800;
+      padding:7px 14px;border-radius:var(--rpill);
+      transition:var(--t);white-space:nowrap;
+      box-shadow:0 2px 10px rgba(37,211,102,.35);
+    }
+    .hd-wa:hover{background:var(--wa-d);transform:translateY(-1px);box-shadow:0 4px 14px rgba(37,211,102,.5)}
+    .hd-right{display:flex;align-items:center;gap:10px}
 
     /* ═══════════════════════════════════════════
        HERO — split: imagen+copy izq · form der
@@ -106,22 +129,14 @@
       padding:0;
       position:relative;
       overflow:hidden;
-    }
-
-    /* Contenedor principal del hero en desktop.
-       Dentro viven únicamente dos columnas: banner y formulario. */
-    .hero-shell{
-      width:100%;
-      max-width:1600px;
-      margin:0 auto;
+      min-height:520px;
     }
 
     .hero-grid{
       display:grid;
-      grid-template-columns:minmax(0,1fr) 420px;
+      grid-template-columns:1fr 420px;
       gap:0;
       min-height:520px;
-      align-items:stretch;
     }
 
     /* ── Lado izquierdo: imagen + copy superpuesto ── */
@@ -131,12 +146,8 @@
       background:var(--red-d);
       isolation:isolate;
     }
-
-    /*
-      Capa de relleno:
-      ocupa todo el alto del hero con la misma imagen en modo cover.
-      Solo se ve en los espacios que deja la imagen principal en contain.
-    */
+    /* Imagen de fondo del hero (lifestyle persona con celular) */
+    /* Fondo de relleno: cubre todo el alto sin recortar el banner principal */
     .hero-left::before{
       content:'';
       position:absolute;
@@ -144,18 +155,12 @@
       z-index:0;
       background:
         linear-gradient(rgba(176,26,32,.28),rgba(176,26,32,.28)),
-        url('https://www.claro.cr/portal/cr/recursos_contenido/1762814035068-POSTPAGO_1540x360.jpg')
-        center center / cover no-repeat;
+        url('https://www.claro.cr/portal/cr/recursos_contenido/1762814035068-POSTPAGO_1540x360.jpg') center center / cover no-repeat;
       filter:blur(10px) brightness(.7);
       transform:scale(1.04);
       pointer-events:none;
     }
 
-    /*
-      Imagen principal:
-      contain garantiza que el banner completo, incluido el contenido 5G
-      del lado derecho, permanezca visible sin recortes.
-    */
     .hero-img{
       position:absolute;
       inset:0;
@@ -166,14 +171,18 @@
       object-position:center center;
       filter:brightness(.78);
     }
-
     /* Gradiente sobre la imagen para que el texto sea legible */
     .hero-left::after{
       content:'';
       position:absolute;
       inset:0;
       z-index:2;
-      background:linear-gradient(to right, rgba(176,26,32,.62) 0%, rgba(176,26,32,.18) 62%, rgba(176,26,32,.04) 100%);
+      background:linear-gradient(
+        to right,
+        rgba(176,26,32,.62) 0%,
+        rgba(176,26,32,.18) 62%,
+        rgba(176,26,32,.04) 100%
+      );
       pointer-events:none;
     }
     .hero-copy{
@@ -324,6 +333,83 @@
     .bsend.loading .lbl{display:none}
     .fnote{font-size:.69rem;color:var(--g400);text-align:center;margin-top:8px}
 
+    /* ── WhatsApp como CTA principal del hero ── */
+    .wa-hero-block{
+      padding:0 0 18px;
+    }
+    /* Botón principal WhatsApp en hero */
+    .wa-hero-btn{
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      width:100%;padding:17px 20px;
+      background:var(--wa);color:var(--white);
+      font-family:var(--font);font-size:1rem;font-weight:900;
+      border:none;border-radius:var(--rpill);cursor:pointer;
+      text-decoration:none;
+      transition:var(--t);
+      box-shadow:0 6px 22px rgba(37,211,102,.45);
+      animation:pulseG 2.8s ease-in-out infinite;
+      position:relative;
+      overflow:hidden;
+    }
+    .wa-hero-btn::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 60%);
+    }
+    .wa-hero-btn:hover{
+      background:var(--wa-d);transform:translateY(-2px);
+      box-shadow:0 10px 30px rgba(37,211,102,.6);
+      animation:none;
+    }
+    .wa-hero-btn svg{flex-shrink:0}
+    .wa-hero-txt{display:flex;flex-direction:column;text-align:left;line-height:1.2}
+    .wa-hero-txt strong{font-size:1rem;font-weight:900}
+    .wa-hero-txt span{font-size:.72rem;opacity:.85;font-weight:500}
+
+    /* Trust badges bajo el botón WhatsApp */
+    .wa-trust{
+      display:flex;gap:10px;margin-top:11px;
+    }
+    .wa-tr-item{
+      display:flex;align-items:center;gap:5px;
+      font-size:.7rem;color:var(--g600);font-weight:600;flex:1;
+      background:var(--wa-bg);border-radius:var(--rsm);
+      padding:6px 8px;
+    }
+    .wa-tr-item svg{flex-shrink:0;color:var(--wa-d)}
+
+    /* Divisor entre WA y formulario */
+    .hero-divider{
+      display:flex;align-items:center;gap:10px;
+      margin:0 0 16px;
+    }
+    .hero-divider::before,.hero-divider::after{
+      content:'';flex:1;height:1px;background:var(--g100);
+    }
+    .hero-divider span{
+      font-size:.7rem;color:var(--g400);font-weight:600;
+      white-space:nowrap;
+    }
+
+    /* Toggle para mostrar/ocultar formulario */
+    .form-toggle-btn{
+      display:flex;align-items:center;justify-content:center;gap:6px;
+      width:100%;padding:10px;
+      font-family:var(--font);font-size:.8rem;font-weight:700;
+      color:var(--g600);background:var(--g50);
+      border:1.5px solid var(--g200);border-radius:var(--rsm);
+      cursor:pointer;transition:var(--t);margin-bottom:14px;
+    }
+    .form-toggle-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-bg)}
+    .form-toggle-btn svg{transition:transform var(--t);flex-shrink:0}
+    .form-toggle-btn.open svg{transform:rotate(180deg)}
+
+    /* Contenedor colapsable del formulario */
+    .form-collapse{
+      display:none;
+      animation:fadeUp .25s ease both;
+    }
+    .form-collapse.open{display:block}
+
     /* Éxito form */
     .fok{display:none;text-align:center;padding:12px 0}
     .fok.show{display:block}
@@ -435,17 +521,19 @@
     .pc-tax{font-size:.66rem;color:var(--g400);margin-top:2px}
     .pc.feat .pc-tax{color:rgba(255,255,255,.55)}
 
-    /* CTA tarjeta */
+    /* CTA tarjeta — WhatsApp */
     .pc-btn{
-      display:flex;align-items:center;justify-content:center;gap:6px;
+      display:flex;align-items:center;justify-content:center;gap:7px;
       padding:11px 16px;font-size:.84rem;font-weight:800;
       border-radius:var(--rpill);font-family:inherit;cursor:pointer;
-      border:2px solid var(--red);background:var(--white);color:var(--red);
+      border:none;background:var(--wa);color:var(--white);
       width:100%;transition:var(--t);
+      box-shadow:0 3px 12px rgba(37,211,102,.35);
+      text-decoration:none;
     }
-    .pc-btn:hover{background:var(--red);color:var(--white);transform:translateY(-1px)}
-    .pc.feat .pc-btn{background:var(--white);color:var(--red);border-color:var(--white)}
-    .pc.feat .pc-btn:hover{background:var(--yellow);color:#1a1000;border-color:var(--yellow)}
+    .pc-btn:hover{background:var(--wa-d);transform:translateY(-1px);box-shadow:0 6px 18px rgba(37,211,102,.5)}
+    .pc.feat .pc-btn{background:var(--white);color:var(--wa-dd);border:none}
+    .pc.feat .pc-btn:hover{background:var(--wa-bg);color:var(--wa-dd)}
 
     /* ═══════════════════════════════════════════
        SECCIÓN FAQ — al fondo, compacta
@@ -483,18 +571,22 @@
 
     .bwhite{
       display:inline-flex;align-items:center;gap:7px;
-      background:var(--white);color:var(--red);
-      font-size:.88rem;font-weight:800;padding:12px 24px;
-      border-radius:var(--rpill);transition:var(--t);box-shadow:0 4px 14px rgba(0,0,0,.18);
-    }
-    .bwhite:hover{background:var(--yellow);color:#1a1000;transform:translateY(-2px)}
-    .bwa{
-      display:inline-flex;align-items:center;gap:7px;
-      background:#25d366;color:var(--white);
-      font-size:.88rem;font-weight:800;padding:12px 24px;
+      background:rgba(255,255,255,.18);color:var(--white);
+      border:1.5px solid rgba(255,255,255,.35);
+      font-size:.85rem;font-weight:700;padding:11px 22px;
       border-radius:var(--rpill);transition:var(--t);
     }
-    .bwa:hover{background:#1eb658;transform:translateY(-2px);box-shadow:0 6px 18px rgba(37,211,102,.4)}
+    .bwhite:hover{background:rgba(255,255,255,.28);transform:translateY(-2px)}
+    /* WhatsApp como botón principal en el strip */
+    .bwa{
+      display:inline-flex;align-items:center;gap:9px;
+      background:var(--wa);color:var(--white);
+      font-size:1rem;font-weight:900;padding:15px 32px;
+      border-radius:var(--rpill);transition:var(--t);
+      box-shadow:0 6px 22px rgba(37,211,102,.5);
+      animation:pulseG 3s ease-in-out infinite;
+    }
+    .bwa:hover{background:var(--wa-d);transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,211,102,.6);animation:none}
 
     /* ═══════════════════════════════════════════
        FOOTER
@@ -507,13 +599,38 @@
     .ft-links a:hover{color:var(--white)}
 
     /* ═══════════════════════════════════════════
-       WHATSAPP FLOTANTE
+       WHATSAPP FLOTANTE — más grande, etiqueta siempre visible
     ═══════════════════════════════════════════ */
-    .wa-f{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;align-items:flex-end;gap:7px}
-    .wa-tip{background:var(--g900);color:var(--white);font-size:.72rem;font-weight:600;padding:5px 11px;border-radius:var(--rpill);opacity:0;transform:translateX(6px);transition:opacity .22s,transform .22s;white-space:nowrap;pointer-events:none}
-    .wa-f:hover .wa-tip{opacity:1;transform:none}
-    .wa-c{width:52px;height:52px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.5);animation:pulseG 2.5s ease-in-out infinite;transition:transform .2s}
-    .wa-c:hover{transform:scale(1.1);animation:none}
+    .wa-f{position:fixed;bottom:24px;right:20px;z-index:200;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+    /* Etiqueta siempre visible */
+    .wa-tip{
+      background:var(--g900);color:var(--white);
+      font-size:.74rem;font-weight:700;
+      padding:6px 13px;border-radius:var(--rpill);
+      opacity:1;transform:none;
+      transition:opacity .22s,transform .22s;
+      white-space:nowrap;
+      box-shadow:0 2px 10px rgba(0,0,0,.25);
+    }
+    .wa-f:hover .wa-tip{opacity:.85}
+    /* Botón 64px (vs 52px original) */
+    .wa-c{
+      width:64px;height:64px;
+      background:var(--wa);border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 4px 20px rgba(37,211,102,.6);
+      animation:pulseG 2.5s ease-in-out infinite;
+      transition:transform .2s;
+      position:relative;
+    }
+    .wa-c:hover{transform:scale(1.1);animation:none;box-shadow:0 6px 28px rgba(37,211,102,.75)}
+    /* Badge "En línea" */
+    .wa-online{
+      position:absolute;top:3px;right:3px;
+      width:14px;height:14px;
+      background:#4caf50;border:2px solid var(--white);
+      border-radius:50%;
+    }
 
     /* ═══════════════════════════════════════════
        MODAL — bottom sheet en móvil
@@ -532,13 +649,58 @@
     .mbody{padding:18px 20px 26px}
     .mhint{font-size:.82rem;color:var(--g600);margin-bottom:16px;line-height:1.5}
 
+    /* Botón WhatsApp en modal */
+    .wa-modal-btn{
+      display:flex;align-items:center;justify-content:center;gap:9px;
+      width:100%;padding:15px 20px;
+      background:var(--wa);color:var(--white);
+      font-family:var(--font);font-size:.95rem;font-weight:900;
+      border:none;border-radius:var(--rpill);cursor:pointer;
+      text-decoration:none;
+      transition:var(--t);
+      box-shadow:0 5px 18px rgba(37,211,102,.45);
+      margin-bottom:14px;
+    }
+    .wa-modal-btn:hover{background:var(--wa-d);transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,211,102,.55)}
+    .wa-modal-txt{display:flex;flex-direction:column;text-align:left;line-height:1.2}
+    .wa-modal-txt strong{font-size:.95rem;font-weight:900}
+    .wa-modal-txt span{font-size:.7rem;opacity:.85;font-weight:500}
+    /* Divisor modal */
+    .modal-divider{
+      display:flex;align-items:center;gap:8px;
+      margin:0 0 14px;
+    }
+    .modal-divider::before,.modal-divider::after{
+      content:'';flex:1;height:1px;background:var(--g100);
+    }
+    .modal-divider span{font-size:.69rem;color:var(--g400);font-weight:600;white-space:nowrap}
+
     /* ═══════════════════════════════════════════
-       STICKY BAR MÓVIL
+       STICKY BAR MÓVIL — WhatsApp como acción principal
     ═══════════════════════════════════════════ */
     .stky{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--white);border-top:1.5px solid var(--g100);padding:9px 14px;gap:9px}
-    .stky-main{flex:1;padding:12px;background:var(--red);color:var(--white);font-family:var(--font);font-size:.88rem;font-weight:800;border:none;border-radius:var(--rpill);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:var(--t)}
-    .stky-main:hover{background:var(--red-d)}
-    .stky-wa{width:44px;height:44px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    /* WhatsApp ahora es el botón principal (flex:1) */
+    .stky-wa-main{
+      flex:1;padding:12px 14px;
+      background:var(--wa);color:var(--white);
+      font-family:var(--font);font-size:.9rem;font-weight:800;
+      border:none;border-radius:var(--rpill);cursor:pointer;
+      display:flex;align-items:center;justify-content:center;gap:7px;
+      transition:var(--t);text-decoration:none;
+      box-shadow:0 3px 12px rgba(37,211,102,.4);
+    }
+    .stky-wa-main:hover{background:var(--wa-d)}
+    /* Botón secundario: contratar (ícono + texto corto) */
+    .stky-main{
+      width:44px;height:44px;
+      background:var(--g50);color:var(--g600);
+      font-family:var(--font);font-size:.78rem;font-weight:700;
+      border:1.5px solid var(--g200);border-radius:50%;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+      transition:var(--t);
+    }
+    .stky-main:hover{background:var(--red-bg);border-color:var(--red);color:var(--red)}
 
     /* ═══════════════════════════════════════════
        ANIMACIONES
@@ -568,7 +730,6 @@
     }
 
     @media(max-width:720px){
-      .hero-shell{max-width:none}
       .hero-grid{grid-template-columns:1fr;min-height:auto}
       /* Banner primero (order:0 = posición natural) */
       .hero-left{
@@ -616,11 +777,17 @@
       .hpill{font-size:.72rem;padding:4px 9px}
       .pc-img-wrap{height:80px}
       .plans-grid{grid-template-columns:1fr}
-      .stky{display:none}
-      body{padding-bottom:0}
+      /* Sticky bar visible en móvil */
+      .stky{display:flex}
+      body{padding-bottom:72px}
       .strip-btns{flex-direction:column;align-items:center}
       .strip-btns a{width:100%;justify-content:center}
       .ft-in{flex-direction:column}
+      /* Ocultar texto de WA en header en móvil pequeño */
+      .hd-wa span{display:none}
+      .hd-wa{padding:7px 10px}
+      /* Trust badges en columna en móvil */
+      .wa-trust{flex-direction:column;gap:6px}
     }
   </style>
 </head>
@@ -638,10 +805,19 @@
       <span class="logo-t">Claro</span>
       <span class="logo-dot" aria-hidden="true"></span>
     </a>
-    <span class="hd-tag" aria-label="Planes Postpago">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-      Planes Postpago · 5G
-    </span>
+    <div class="hd-right">
+      <span class="hd-tag" aria-label="Planes Postpago">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        Planes Postpago · 5G
+      </span>
+      <a href="https://api.whatsapp.com/send?phone=+50670816567&text=%F0%9F%94%B4%20Buen%20d%C3%ADa%20Claro,%20necesito%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos"
+         target="_blank" rel="noopener noreferrer"
+         class="hd-wa" id="hd-wa"
+         aria-label="Contactar por WhatsApp">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+    </div>
   </div>
 </header>
 
@@ -652,7 +828,6 @@
             formulario der siempre visible
 ════════════════════════════════ -->
 <section class="hero" aria-labelledby="hero-h1">
-  <div class="hero-shell">
   <div class="hero-grid">
 
     <!-- Izquierda: imagen de fondo + copy -->
@@ -692,84 +867,128 @@
       </div>
     </div>
 
-    <!-- Derecha: formulario siempre visible -->
+    <!-- Derecha: WhatsApp CTA principal + formulario secundario colapsable -->
     <div class="hero-right" id="heroFormWrap">
       <div class="form-head">
-        <span class="form-tag">Contratación rápida</span>
+        <span class="form-tag">Atención inmediata</span>
         <h2 class="form-title">¿Querés contratar ahora?</h2>
-        <p class="form-sub">Un asesor te contacta en menos de 24 h.</p>
+        <p class="form-sub">Hablá con un asesor en minutos.</p>
       </div>
 
-      <!-- Chip del plan seleccionado -->
-      <div class="plan-chip" id="planChip" role="status" aria-live="polite">
-        <div class="chip-ico" aria-hidden="true">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-        </div>
-        <span class="chip-name" id="chipName"></span>
-        <button class="chip-clr" id="chipClear" type="button" aria-label="Quitar plan seleccionado">Quitar</button>
-      </div>
-
-      <form id="heroForm" novalidate aria-label="Formulario de contratación postpago">
-        <input type="hidden" id="planField" name="plan"/>
-
-        <div class="fg">
-          <label for="f-nom">Nombre completo<span class="req" aria-hidden="true">*</span></label>
-          <div class="iw">
-            <span class="iico" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-            <input type="text" id="f-nom" name="nombre" class="fc" placeholder="Ej: María García" autocomplete="name" required aria-required="true" aria-describedby="e-nom"/>
+      <!-- ── WhatsApp como acción principal ── -->
+      <div class="wa-hero-block">
+        <a href="https://api.whatsapp.com/send?phone=+50670816567&text=%F0%9F%94%B4%20Buen%20d%C3%ADa%20Claro,%20me%20interesa%20contratar%20un%20plan%20postpago.%20%C2%BFPodr%C3%ADan%20ayudarme%3F"
+           target="_blank" rel="noopener noreferrer"
+           class="wa-hero-btn" id="hero-wa-btn"
+           aria-label="Contactar por WhatsApp ahora">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <div class="wa-hero-txt">
+            <strong>Escribir por WhatsApp</strong>
+            <span>Respuesta en minutos</span>
           </div>
-          <span class="ferr" id="e-nom" role="alert">Ingresá tu nombre.</span>
+        </a>
+
+        <!-- Trust badges -->
+        <div class="wa-trust" aria-label="Por qué WhatsApp">
+          <div class="wa-tr-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Respuesta rápida
+          </div>
+          <div class="wa-tr-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Asesor real
+          </div>
+          <div class="wa-tr-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Sin compromiso
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Divisor ── -->
+      <div class="hero-divider">
+        <span>o dejá tus datos y te llamamos</span>
+      </div>
+
+      <!-- ── Toggle para abrir/cerrar formulario ── -->
+      <button type="button" class="form-toggle-btn" id="formToggleBtn" aria-expanded="false" aria-controls="formCollapse">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        Prefiero que me contacten por teléfono
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <!-- ── Formulario colapsable (secundario) ── -->
+      <div class="form-collapse" id="formCollapse">
+        <!-- Chip del plan seleccionado -->
+        <div class="plan-chip" id="planChip" role="status" aria-live="polite">
+          <div class="chip-ico" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <span class="chip-name" id="chipName"></span>
+          <button class="chip-clr" id="chipClear" type="button" aria-label="Quitar plan seleccionado">Quitar</button>
         </div>
 
-        <div class="fg">
-          <label for="f-tel">Teléfono<span class="req" aria-hidden="true">*</span></label>
-          <div class="tg" role="group" aria-label="Teléfono Costa Rica +506">
-            <div class="tpfx" aria-label="+506">
-              <!-- Bandera CR SVG inline -->
-              <svg width="20" height="14" viewBox="0 0 20 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <rect width="20" height="14" fill="#002B7F"/>
-                <rect y="3.5" width="20" height="2" fill="#fff"/>
-                <rect y="8.5" width="20" height="2" fill="#fff"/>
-                <rect y="5" width="20" height="4" fill="#CE1126"/>
-              </svg>
-              +506
+        <form id="heroForm" novalidate aria-label="Formulario de contratación postpago">
+          <input type="hidden" id="planField" name="plan"/>
+
+          <div class="fg">
+            <label for="f-nom">Nombre completo<span class="req" aria-hidden="true">*</span></label>
+            <div class="iw">
+              <span class="iico" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+              <input type="text" id="f-nom" name="nombre" class="fc" placeholder="Ej: María García" autocomplete="name" required aria-required="true" aria-describedby="e-nom"/>
             </div>
-            <input type="tel" id="f-tel" name="telefono" class="tinp" placeholder="6000 0000" maxlength="8" pattern="[0-9]{8}" inputmode="numeric" autocomplete="tel-local" required aria-required="true" aria-describedby="e-tel"/>
+            <span class="ferr" id="e-nom" role="alert">Ingresá tu nombre.</span>
           </div>
-          <span class="ferr" id="e-tel" role="alert">Ingresá 8 dígitos.</span>
-        </div>
 
-        <div class="fg">
-          <label for="f-mail">Correo electrónico<span class="req" aria-hidden="true">*</span></label>
-          <div class="iw">
-            <span class="iico" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-            <input type="email" id="f-mail" name="email" class="fc" placeholder="correo@ejemplo.com" autocomplete="email" required aria-required="true" aria-describedby="e-mail"/>
+          <div class="fg">
+            <label for="f-tel">Teléfono<span class="req" aria-hidden="true">*</span></label>
+            <div class="tg" role="group" aria-label="Teléfono Costa Rica +506">
+              <div class="tpfx" aria-label="+506">
+                <svg width="20" height="14" viewBox="0 0 20 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect width="20" height="14" fill="#002B7F"/>
+                  <rect y="3.5" width="20" height="2" fill="#fff"/>
+                  <rect y="8.5" width="20" height="2" fill="#fff"/>
+                  <rect y="5" width="20" height="4" fill="#CE1126"/>
+                </svg>
+                +506
+              </div>
+              <input type="tel" id="f-tel" name="telefono" class="tinp" placeholder="6000 0000" maxlength="8" pattern="[0-9]{8}" inputmode="numeric" autocomplete="tel-local" required aria-required="true" aria-describedby="e-tel"/>
+            </div>
+            <span class="ferr" id="e-tel" role="alert">Ingresá 8 dígitos.</span>
           </div>
-          <span class="ferr" id="e-mail" role="alert">Correo no válido.</span>
+
+          <div class="fg">
+            <label for="f-mail">Correo electrónico<span class="req" aria-hidden="true">*</span></label>
+            <div class="iw">
+              <span class="iico" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+              <input type="email" id="f-mail" name="email" class="fc" placeholder="correo@ejemplo.com" autocomplete="email" required aria-required="true" aria-describedby="e-mail"/>
+            </div>
+            <span class="ferr" id="e-mail" role="alert">Correo no válido.</span>
+          </div>
+
+          <div class="cst">
+            <input type="checkbox" id="f-cst" name="consent" required aria-required="true" aria-describedby="e-cst"/>
+            <label for="f-cst" class="cst-t">Acepto la <a href="politica-privacidad.html" target="_blank">Política de Privacidad</a> y autorizo a Claro a contactarme.</label>
+          </div>
+          <span class="ferr" id="e-cst" role="alert">Debés aceptar la política.</span>
+
+          <button type="submit" class="bsend" id="heroSubmit">
+            <span class="lbl">Quiero que me contacten</span>
+            <span class="spin" aria-hidden="true"></span>
+          </button>
+          <p class="fnote">Un asesor te contactará en menos de 24 h hábiles.</p>
+        </form>
+
+        <div class="fok" id="heroFormOk" role="status" aria-live="polite">
+          <div class="ok-ico" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38a169" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <h3>¡Solicitud enviada!</h3>
+          <p>Un asesor Claro te contactará pronto para ayudarte.</p>
         </div>
+      </div><!-- /form-collapse -->
 
-        <div class="cst">
-          <input type="checkbox" id="f-cst" name="consent" required aria-required="true" aria-describedby="e-cst"/>
-          <label for="f-cst" class="cst-t">Acepto la <a href="politica-privacidad.html" target="_blank">Política de Privacidad</a> y autorizo a Claro a contactarme.</label>
-        </div>
-        <span class="ferr" id="e-cst" role="alert">Debés aceptar la política.</span>
-
-        <button type="submit" class="bsend" id="heroSubmit">
-          <span class="lbl">Quiero que me contacten</span>
-          <span class="spin" aria-hidden="true"></span>
-        </button>
-        <p class="fnote">Un asesor te contactará en menos de 24 h hábiles.</p>
-      </form>
-
-      <div class="fok" id="heroFormOk" role="status" aria-live="polite">
-        <div class="ok-ico" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38a169" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <h3>¡Solicitud enviada!</h3>
-        <p>Un asesor Claro te contactará pronto para ayudarte.</p>
-      </div>
     </div><!-- /hero-right -->
 
   </div><!-- /hero-grid -->
-  </div><!-- /hero-shell -->
 </section>
 
 <!-- ════════════════════════════════
@@ -790,9 +1009,9 @@
       <article class="pc rv" role="listitem" aria-label="Plan Conexión 1, 36 GB, ₡11,900 por mes">
         <div class="ribbon" aria-hidden="true">Más popular</div>
         <div class="pc-img-wrap">
-          <!-- Imagen Claro CR: Fondo claro con ventanas -->
+          <!-- Imagen Claro CR: Fondo blanco circular para promoción -->
           <img class="pc-img"
-               src="https://www.claro.cr/portal/cr/recursos_contenido/1779990530851-1750869447707-1649367148743-fondo_2.png"
+               src="https://www.claro.cr/portal/cr/recursos_contenido/1750868402594-1649367031424-fondo_1.png"
                alt="Plan Conexión 1 Claro – 36 GB postpago"
                width="400" height="130" loading="lazy"/>
         </div>
@@ -811,7 +1030,10 @@
             <div class="pc-price">₡11,900</div>
             <div class="pc-tax">Con imp. ₡12,085 / mes</div>
           </div>
-          <button class="pc-btn" type="button" data-plan="Plan Conexión 1 – 36 GB – ₡11,900">¡Lo quiero!</button>
+          <button class="pc-btn" type="button" data-plan="Plan Conexión 1 – 36 GB – ₡11,900">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            ¡Lo quiero!
+          </button>
         </div>
       </article>
 
@@ -840,7 +1062,10 @@
             <div class="pc-price">₡15,900</div>
             <div class="pc-tax">Con imp. ₡16,147 / mes</div>
           </div>
-          <button class="pc-btn" type="button" data-plan="Plan Conexión 2 – 48 GB – ₡15,900">¡Lo quiero!</button>
+          <button class="pc-btn" type="button" data-plan="Plan Conexión 2 – 48 GB – ₡15,900">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            ¡Lo quiero!
+          </button>
         </div>
       </article>
 
@@ -848,10 +1073,10 @@
       <article class="pc rv d2" role="listitem" aria-label="Plan Conexión 3, 66 GB, ₡20,900 por mes">
         <div class="ribbon" aria-hidden="true">Más popular</div>
         <div class="pc-img-wrap">
-          <!-- Imagen Claro CR: Mujer usando su celular – planes y redes sociales -->
+          <!-- Imagen Claro CR: Celular para promoción de prima ₡0 -->
           <img class="pc-img"
-               src="https://www.claro.cr/portal/cr/recursos_contenido/1750870060200-1651694722279-1650469535598-Id-26-v1_%281%29.png"
-               alt="Mujer usando su celular con redes ilimitadas – Plan Conexión 3 Claro 66 GB"
+               src="https://www.claro.cr/portal/cr/recursos_contenido/1750868424459-1649367076329-Prima_0_.png"
+               alt="Celular Claro con prima ₡0 – Plan Conexión 3, 66 GB postpago"
                width="400" height="130" loading="lazy"/>
         </div>
         <div class="pc-body">
@@ -869,7 +1094,10 @@
             <div class="pc-price">₡20,900</div>
             <div class="pc-tax">Con imp. ₡21,224 / mes</div>
           </div>
-          <button class="pc-btn" type="button" data-plan="Plan Conexión 3 – 66 GB – ₡20,900">¡Lo quiero!</button>
+          <button class="pc-btn" type="button" data-plan="Plan Conexión 3 – 66 GB – ₡20,900">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            ¡Lo quiero!
+          </button>
         </div>
       </article>
 
@@ -903,7 +1131,10 @@
             <div class="pc-price">₡27,700</div>
             <div class="pc-tax">Con imp. ₡28,129 / mes</div>
           </div>
-          <button class="pc-btn" type="button" data-plan="Plan Conexión 4 – 84 GB – ₡27,700">¡Lo quiero!</button>
+          <button class="pc-btn" type="button" data-plan="Plan Conexión 4 – 84 GB – ₡27,700">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            ¡Lo quiero!
+          </button>
         </div>
       </article>
 
@@ -911,10 +1142,10 @@
       <article class="pc rv d4" role="listitem" aria-label="Plan Conexión 5, 114 GB, ₡36,100 por mes">
         <div class="ribbon" aria-hidden="true">Más popular</div>
         <div class="pc-img-wrap">
-          <!-- Imagen Claro CR: Mujer viajando y tomando fotografía con celular -->
+          <!-- Imagen Claro CR: Conexión sin fronteras – Torre Eiffel -->
           <img class="pc-img"
-               src="https://www.claro.cr/portal/cr/recursos_contenido/1751248604760-1744643090356-fran.png"
-               alt="Mujer viajando con celular – Plan Conexión 5 Claro 114 GB"
+               src="https://www.claro.cr/portal/cr/recursos_contenido/1751248608692-1744643021055-sin-fronteras.png"
+               alt="Conexión sin fronteras – Plan Conexión 5 Claro 114 GB"
                width="400" height="130" loading="lazy"/>
         </div>
         <div class="pc-body">
@@ -937,7 +1168,10 @@
             <div class="pc-price">₡36,100</div>
             <div class="pc-tax">Con imp. ₡36,660 / mes</div>
           </div>
-          <button class="pc-btn" type="button" data-plan="Plan Conexión 5 – 114 GB – ₡36,100">¡Lo quiero!</button>
+          <button class="pc-btn" type="button" data-plan="Plan Conexión 5 – 114 GB – ₡36,100">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            ¡Lo quiero!
+          </button>
         </div>
       </article>
 
@@ -971,7 +1205,10 @@
             <div class="pc-price">₡45,200</div>
             <div class="pc-tax">Con imp. ₡45,900 / mes</div>
           </div>
-          <button class="pc-btn" type="button" data-plan="Plan Conexión 6 – Internet Ilimitado – ₡45,200">¡Lo quiero!</button>
+          <button class="pc-btn" type="button" data-plan="Plan Conexión 6 – Internet Ilimitado – ₡45,200">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            ¡Lo quiero!
+          </button>
         </div>
       </article>
 
@@ -1041,17 +1278,17 @@
 <section class="cta-strip" aria-labelledby="cta-h">
   <div class="container">
     <h2 id="cta-h">¿Listo para tu plan <span>Claro</span>?</h2>
-    <p>Elegí arriba o escribinos por WhatsApp ahora mismo.</p>
+    <p>Un asesor de WhatsApp te ayuda a elegir el plan perfecto ahora mismo.</p>
     <div class="strip-btns">
+      <a href="https://api.whatsapp.com/send?phone=+50670816567&text=%F0%9F%94%B4%20Buen%20d%C3%ADa%20Claro,%20necesito%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos"
+         target="_blank" rel="noopener noreferrer" class="bwa" id="cta-wa"
+         aria-label="Escribir por WhatsApp ahora">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Escribir por WhatsApp ahora
+      </a>
       <a href="#planes" class="bwhite" aria-label="Ver planes postpago">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
         Ver planes
-      </a>
-      <a href="https://api.whatsapp.com/send?phone=+50670816567&text=%F0%9F%94%B4%20Buen%20d%C3%ADa%20Claro,%20necesito%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos"
-         target="_blank" rel="noopener noreferrer" class="bwa" id="cta-wa"
-         aria-label="Escribir por WhatsApp">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Escribir por WhatsApp
       </a>
     </div>
   </div>
@@ -1083,7 +1320,8 @@
   <a href="https://api.whatsapp.com/send?phone=+50670816567&text=%F0%9F%94%B4%20Buen%20d%C3%ADa%20Claro,%20necesito%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos"
      target="_blank" rel="noopener noreferrer" class="wa-c" id="wa-float"
      aria-label="Abrir WhatsApp">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    <span class="wa-online" aria-hidden="true"></span>
   </a>
 </div>
 
@@ -1091,13 +1329,17 @@
      STICKY BAR MÓVIL (< 560px)
 ════════════════════════════════ -->
 <div class="stky" id="stkyBar" aria-label="Acciones rápidas">
-  <button class="stky-main" id="stkyBtn" type="button">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-    Quiero contratar
+  <!-- Botón secundario: formulario (ícono) -->
+  <button class="stky-main" id="stkyBtn" type="button" aria-label="Contratar por formulario">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
   </button>
+  <!-- Botón principal: WhatsApp (ancho completo) -->
   <a href="https://api.whatsapp.com/send?phone=+50670816567&text=%F0%9F%94%B4%20Buen%20d%C3%ADa%20Claro,%20necesito%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos"
-     target="_blank" rel="noopener noreferrer" class="stky-wa" aria-label="WhatsApp">
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+     target="_blank" rel="noopener noreferrer"
+     class="stky-wa-main" id="stky-wa"
+     aria-label="Escribir por WhatsApp">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Escribir por WhatsApp
   </a>
 </div>
 
@@ -1117,7 +1359,21 @@
       <button class="mcls" id="mClose" type="button" aria-label="Cerrar">✕</button>
     </div>
     <div class="mbody">
-      <p class="mhint">Completá tus datos y un asesor te contacta para finalizar la contratación.</p>
+      <!-- Botón WhatsApp primero en el modal -->
+      <a href="https://api.whatsapp.com/send?phone=+50670816567&text=%F0%9F%94%B4%20Buen%20d%C3%ADa%20Claro,%20me%20interesa%20contratar%20un%20plan%20postpago.%20%C2%BFPodr%C3%ADan%20ayudarme%3F"
+         target="_blank" rel="noopener noreferrer"
+         class="wa-modal-btn" id="modal-wa-btn"
+         aria-label="Contactar por WhatsApp">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <div class="wa-modal-txt">
+          <strong>Escribir por WhatsApp</strong>
+          <span>Respuesta en minutos · sin formularios</span>
+        </div>
+      </a>
+
+      <div class="modal-divider"><span>o completá tus datos</span></div>
+
+      <p class="mhint">Dejá tu información y un asesor te contacta para finalizar la contratación.</p>
 
       <form id="mForm" novalidate aria-label="Formulario de contratación rápida">
         <input type="hidden" id="m-plan" name="plan"/>
@@ -1223,6 +1479,35 @@ document.querySelectorAll('.pc-det-btn').forEach(function(btn){
   });
 });
 
+/* ── Toggle formulario colapsable en hero ── */
+var formToggleBtn=document.getElementById('formToggleBtn');
+var formCollapse=document.getElementById('formCollapse');
+if(formToggleBtn&&formCollapse){
+  formToggleBtn.addEventListener('click',function(){
+    var isOpen=formCollapse.classList.contains('open');
+    formCollapse.classList.toggle('open',!isOpen);
+    formToggleBtn.classList.toggle('open',!isOpen);
+    formToggleBtn.setAttribute('aria-expanded',String(!isOpen));
+    if(!isOpen){
+      // Enfocar primer campo al abrir
+      setTimeout(function(){var fi=formCollapse.querySelector('input');if(fi)fi.focus();},200);
+      tk('form_start',{form:'hero_toggle'});
+    }
+  });
+}
+
+/* ── Función para construir URL de WhatsApp con plan ── */
+var WA_PHONE='+50670816567';
+function buildWaUrl(planStr){
+  var msg;
+  if(planStr&&planStr.length>0){
+    msg='🔴 Buen día Claro, me interesa contratar el '+planStr+'. ¿Podrían ayudarme?';
+  }else{
+    msg='🔴 Buen día Claro, necesito más información sobre sus productos';
+  }
+  return 'https://api.whatsapp.com/send?phone='+encodeURIComponent(WA_PHONE)+'&text='+encodeURIComponent(msg);
+}
+
 /* ── Modal ── */
 var ovl=document.getElementById('ovl');
 var mName=document.getElementById('mplan-name');
@@ -1255,47 +1540,17 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ovl.classLi
 var mOkClose=document.getElementById('mOkClose');
 if(mOkClose)mOkClose.addEventListener('click',closeModal);
 
-/* ── "¡Lo quiero!" en tarjetas ── */
-function setChip(planStr){
-  var chip=document.getElementById('planChip');
-  var cn=document.getElementById('chipName');
-  var pf=document.getElementById('planField');
-  if(chip&&cn&&pf){cn.textContent=planStr;pf.value=planStr;chip.classList.add('show');}
-}
-
+/* ── Botones de plan → abren WhatsApp con mensaje pre-escrito ── */
 document.querySelectorAll('.pc-btn').forEach(function(btn){
   btn.addEventListener('click',function(){
     var plan=btn.getAttribute('data-plan')||'';
     if(!plan)return;
     tk('plan_select',{plan_name:plan});
-    var isMob=window.innerWidth<560;
-    if(isMob){
-      openModal(plan);
-    }else{
-      // Desktop: precarga chip en hero form + scroll suave
-      setChip(plan);
-      var heroWrap=document.getElementById('heroFormWrap');
-      if(heroWrap){
-        heroWrap.scrollIntoView({behavior:'smooth',block:'nearest'});
-        heroWrap.style.transition='box-shadow .3s';
-        heroWrap.style.boxShadow='inset 0 0 0 2px rgba(218,33,40,.4), 0 8px 28px rgba(218,33,40,.15)';
-        setTimeout(function(){heroWrap.style.boxShadow='';},1400);
-      }
-    }
+    tk('whatsapp_click',{src:'plan_btn',plan:plan});
+    var waUrl=buildWaUrl(plan);
+    window.open(waUrl,'_blank','noopener,noreferrer');
   });
 });
-
-/* ── Quitar chip ── */
-var chipClear=document.getElementById('chipClear');
-if(chipClear){chipClear.addEventListener('click',function(){
-  document.getElementById('planChip').classList.remove('show');
-  document.getElementById('chipName').textContent='';
-  document.getElementById('planField').value='';
-});}
-
-/* ── Sticky btn → modal ── */
-var stkyBtn=document.getElementById('stkyBtn');
-if(stkyBtn){stkyBtn.addEventListener('click',function(){openModal('Plan postpago Claro');tk('hero_cta_click',{src:'sticky'});});}
 
 /* ── Validación genérica ── */
 function validate(f){
@@ -1430,13 +1685,38 @@ document.querySelectorAll('.tinp').forEach(function(i){
   i.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').substring(0,8);});
 });
 
-/* ── Tracking WA ── */
-document.querySelectorAll('[href*="whatsapp"],[class*="wa"]').forEach(function(el){
+/* ── Quitar chip ── */
+var chipClear=document.getElementById('chipClear');
+if(chipClear){chipClear.addEventListener('click',function(){
+  var chip=document.getElementById('planChip');
+  var cn=document.getElementById('chipName');
+  var pf=document.getElementById('planField');
+  if(chip)chip.classList.remove('show');
+  if(cn)cn.textContent='';
+  if(pf)pf.value='';
+});}
+
+/* ── Sticky btn → abre formulario colapsable en hero ── */
+var stkyBtn=document.getElementById('stkyBtn');
+if(stkyBtn){stkyBtn.addEventListener('click',function(){
+  var fc=document.getElementById('formCollapse');
+  var ftb=document.getElementById('formToggleBtn');
+  if(fc&&!fc.classList.contains('open')){
+    fc.classList.add('open');
+    if(ftb){ftb.classList.add('open');ftb.setAttribute('aria-expanded','true');}
+  }
+  var heroWrap=document.getElementById('heroFormWrap');
+  if(heroWrap){heroWrap.scrollIntoView({behavior:'smooth',block:'start'});}
+  tk('hero_cta_click',{src:'sticky_form'});
+});}
+
+/* ── Tracking WA (global) ── */
+document.querySelectorAll('[href*="whatsapp"]').forEach(function(el){
   el.addEventListener('click',function(){tk('whatsapp_click',{src:el.id||'unknown'});});
 });
 
 /* ── Landing view ── */
-tk('landing_view',{page:'moviles_postpago',version:'03'});
+tk('landing_view',{page:'moviles_postpago',version:'03-wa'});
 </script>
 
 </body>
